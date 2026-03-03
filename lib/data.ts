@@ -59,9 +59,18 @@ export const experiences: Experience[] = [
 
 // Achievements
 export const achievements = [
-    "Participant: ICPEP Regional Competitive Programming (Java)",
-    "Lead developer for AI-based and IoT projects",
-    "Created a Sentiment & Tone Profiler powered by LLMs (ChadGpt)",
+    {
+        title: "Regional Programming Competition (ICpEP) 2024",
+        detail: "Java Participant",
+    },
+    {
+        title: "Campus Event - CpE Days 2022",
+        detail: "Programming Champion Team (C++)",
+    },
+    {
+        title: "Reply Code Challenge Team 2022",
+        detail: "International Participant",
+    },
 ];
 
 // Projects

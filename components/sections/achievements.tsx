@@ -19,7 +19,7 @@ export function Achievements() {
         >
             <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
                 <Trophy size={18} className="text-neutral-500" />
-                Achievements
+                COMPETITIONS & ACHIEVEMENTS
             </h2>
 
             <div className="space-y-3">
@@ -34,9 +34,14 @@ export function Achievements() {
                         <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
                             <Award className="w-4 h-4 text-amber-600 dark:text-amber-500" />
                         </div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                            {achievement}
-                        </p>
+                        <div>
+                            <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                                {achievement.title}
+                            </p>
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                                {achievement.detail}
+                            </p>
+                        </div>
                     </motion.div>
                 ))}
             </div>
