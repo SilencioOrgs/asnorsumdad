@@ -90,7 +90,7 @@ export const projects: Project[] = [
     {
         title: "ChadGPT - Tone Profiler",
         description: "Sentiment & tone profiler using FLAN-T5 and Llama 3.2",
-        tags: ["Next.js", "FastAPI", "AI/ML"],
+        tags: ["Next.js", "FastAPI", "Ollama"],
         url: "https://tone-profiler.vercel.app",
         image: "/photos/tone-profiler.vercel.app_.png",
     },
@@ -99,6 +99,34 @@ export const projects: Project[] = [
         description: "Elegant wedding invitation landing page",
         tags: ["Next.js", "Framer Motion"],
         url: "https://wedding-landingpage.vercel.app",
+        image: "/photos/wedding-landingpage.vercel.app_.png",
+    },
+    {
+        title: "Daniel & Giada Wedding Website",
+        description: "Custom wedding website with event details, story sections, and a polished romantic presentation.",
+        tags: ["Next.js", "Framer Motion"],
+        url: "https://daniel-giada-wedding.vercel.app",
+        image: "/photos/wedding-landingpage.vercel.app_.png",
+    },
+    {
+        title: "Carl Joseph & Shania Mae Wedding Website",
+        description: "Responsive wedding landing page built to showcase the couple, ceremony details, and celebration timeline.",
+        tags: ["Next.js", "Framer Motion"],
+        url: "https://carl-joseph-and-shania-mae.vercel.app",
+        image: "/photos/wedding-landingpage.vercel.app_.png",
+    },
+    {
+        title: "Rameez & Kris Wedding Website",
+        description: "Elegant wedding invitation website designed for sharing event information in a warm, modern layout.",
+        tags: ["Next.js", "Framer Motion"],
+        url: "https://rameez-kris-i13a.vercel.app",
+        image: "/photos/wedding-landingpage.vercel.app_.png",
+    },
+    {
+        title: "Godfrey & Vanessa Wedding Website",
+        description: "Wedding website featuring invitation content, key event details, and a smooth mobile-friendly experience.",
+        tags: ["Next.js", "Framer Motion"],
+        url: "https://godfreyvanessa.vercel.app",
         image: "/photos/wedding-landingpage.vercel.app_.png",
     },
     {
