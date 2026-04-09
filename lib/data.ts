@@ -22,7 +22,7 @@ My focus is on creating clean, scalable, and reliable systems — whether it's a
 export const techStack = {
     frontend: ["JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS", "Flutter"],
     backend: ["Node.js", "Python", "FastAPI", "PHP", "REST APIs"],
-    database: ["Firebase", "Supabase", "MySQL", "SQLite"],
+    database: ["Firebase", "Supabase", "MySQL", "SQLite", "PostgreSQL"],
     ai: ["OpenAI API", "LLaMA", "Flan-T5", "NLP", "Text Processing"],
     iot: ["ESP32", "Arduino", "Raspberry Pi", "GPS Modules", "Sensors & Actuators"],
     other: ["Git / GitHub", "Trello"],
