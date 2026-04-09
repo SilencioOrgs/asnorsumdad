@@ -60,6 +60,10 @@ export const experiences: Experience[] = [
 // Achievements
 export const achievements = [
     {
+        title: "Campus Event - CpE Days 2026",
+        detail: "Programming Champion Team (Python)",
+    },
+    {
         title: "Regional Programming Competition (ICpEP) 2024",
         detail: "Java Participant",
     },
@@ -110,6 +114,13 @@ export const projects: Project[] = [
         tags: ["Next.js", "Productivity"],
         url: "https://focus-flow-vert.vercel.app",
         image: "/photos/focus-flow-vert.vercel.app_.png",
+    },
+    {
+        title: "Ate Ai's Kitchen",
+        description: "Food ordering platform for managing orders, notifications, and delivery locations.",
+        tags: ["Next.js", "Supabase", "Firebase", "Nodemailer", "Mapbox"],
+        url: "https://ateaikitchen.vercel.app",
+        image: "/photos/orderingsystem.png",
     },
 ];
 
