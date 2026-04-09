@@ -189,7 +189,7 @@ export function Hero() {
                         <Button
                             variant="primary"
                             size="sm"
-                            onClick={() => window.open("/resume.pdf", "_blank")}
+                            onClick={() => window.open("/cv.pdf", "_blank")}
                             className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2"
                         >
                             <Download size={12} className="sm:w-3.5 sm:h-3.5" />

@@ -11,6 +11,8 @@ export function Projects() {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
     const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
+    const [showAllProjects, setShowAllProjects] = useState(false);
+    const visibleProjects = showAllProjects ? projects : projects.slice(0, 4);
 
     useEffect(() => {
         if (!selectedProject) {
@@ -42,13 +44,24 @@ export function Projects() {
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
             >
-                <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4 flex items-center gap-2">
-                    <FolderOpen size={18} className="text-neutral-500" />
-                    Projects
-                </h2>
+                <div className="mb-4 flex items-center justify-between gap-3">
+                    <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
+                        <FolderOpen size={18} className="text-neutral-500" />
+                        Projects
+                    </h2>
+                    {projects.length > 4 && (
+                        <button
+                            type="button"
+                            onClick={() => setShowAllProjects((current) => !current)}
+                            className="text-xs font-medium uppercase tracking-[0.18em] text-neutral-500 transition-colors hover:text-neutral-800 dark:hover:text-neutral-200"
+                        >
+                            {showAllProjects ? "Show Less" : "View More"}
+                        </button>
+                    )}
+                </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {projects.map((project, index) => {
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    {visibleProjects.map((project, index) => {
                         return (
                             <motion.button
                                 key={project.title}
@@ -65,7 +78,7 @@ export function Projects() {
                                         alt={project.title}
                                         width={400}
                                         height={225}
-                                        className="h-full w-full object-cover transition-all duration-300 group-hover:brightness-110"
+                                        className="h-full w-full object-cover object-top transition-all duration-300 group-hover:brightness-110"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/30">
                                         <ExternalLink
@@ -131,7 +144,7 @@ export function Projects() {
                                     src={selectedProject.image}
                                     alt={selectedProject.title}
                                     fill
-                                    className="object-cover"
+                                    className="object-cover object-top"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
                                 <button
