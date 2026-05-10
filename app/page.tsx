@@ -24,12 +24,12 @@ export default function Home() {
           <Profile />
           <Projects />
           <TechStack />
-          <GitHubActivity />
 
           <div className="border-t border-black py-16 md:py-24">
             <Experience />
           </div>
 
+          <GitHubActivity />
           <Certificates />
           <Gallery />
           <SocialLinks />

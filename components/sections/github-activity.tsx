@@ -25,6 +25,12 @@ interface ContributionResponse {
     message?: string;
 }
 
+interface ActivityStats {
+    longestStreak: number;
+    bestMonth: string;
+    activeDays: number;
+}
+
 const weekdayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
 
 function getContributionClass(day?: ContributionDay) {
@@ -65,6 +71,54 @@ function getMonthMarkers(weeks: ContributionWeek[]) {
 
         return "";
     });
+}
+
+function getActivityStats(weeks: ContributionWeek[]): ActivityStats {
+    const days = weeks
+        .flatMap((week) => week.contributionDays)
+        .sort((first, second) => new Date(first.date).getTime() - new Date(second.date).getTime());
+    const monthTotals = new Map<string, { label: string; total: number }>();
+    let activeDays = 0;
+    let longestStreak = 0;
+    let currentStreak = 0;
+    let previousActiveDate: Date | null = null;
+
+    days.forEach((day) => {
+        const date = new Date(day.date);
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+        const monthLabel = new Intl.DateTimeFormat("en", { month: "long" }).format(date);
+        const monthTotal = monthTotals.get(monthKey) ?? { label: monthLabel, total: 0 };
+        monthTotal.total += day.contributionCount;
+        monthTotals.set(monthKey, monthTotal);
+
+        if (day.contributionCount > 0) {
+            activeDays += 1;
+
+            if (previousActiveDate) {
+                const dayDifference = Math.round(
+                    (date.getTime() - previousActiveDate.getTime()) / (1000 * 60 * 60 * 24)
+                );
+                currentStreak = dayDifference === 1 ? currentStreak + 1 : 1;
+            } else {
+                currentStreak = 1;
+            }
+
+            longestStreak = Math.max(longestStreak, currentStreak);
+            previousActiveDate = date;
+        } else {
+            currentStreak = 0;
+            previousActiveDate = null;
+        }
+    });
+
+    const bestMonth =
+        Array.from(monthTotals.values()).sort((first, second) => second.total - first.total)[0]?.label ?? "--";
+
+    return {
+        longestStreak,
+        bestMonth,
+        activeDays,
+    };
 }
 
 function ContributionSkeleton() {
@@ -135,6 +189,8 @@ export function GitHubActivity() {
     }, []);
 
     const monthMarkers = useMemo(() => getMonthMarkers(activity?.weeks ?? []), [activity?.weeks]);
+    const activityStats = useMemo(() => getActivityStats(activity?.weeks ?? []), [activity?.weeks]);
+    const username = activity?.username ?? "GitHub";
 
     return (
         <motion.section
@@ -149,23 +205,38 @@ export function GitHubActivity() {
         >
             <PixelScatter active={isActive} />
 
-            <div className="mb-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-                <div>
-                    <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+            <div className="mb-10 grid gap-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
                         GitHub Activity
                     </p>
-                    <h2 id="github-activity-heading" className="font-display text-4xl font-semibold text-black sm:text-5xl">
-                        Contribution index.
-                    </h2>
+                    <span className="inline-flex border border-neutral-200 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                        @{username}
+                    </span>
                 </div>
 
-                <div className="grid gap-3 lg:justify-self-end lg:text-right">
-                    <p className="font-display text-4xl font-semibold leading-none text-black">
+                <div className="grid gap-3">
+                    <h2
+                        id="github-activity-heading"
+                        className="font-display text-6xl font-semibold leading-none text-black sm:text-7xl"
+                    >
                         {isLoading ? "--" : activity?.totalContributions ?? 0}
-                    </p>
+                    </h2>
                     <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
                         Contributions in the last year
                     </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex border border-neutral-200 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                        Longest streak · {activityStats.longestStreak} days
+                    </span>
+                    <span className="inline-flex border border-neutral-200 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                        Best month · {activityStats.bestMonth}
+                    </span>
+                    <span className="inline-flex border border-neutral-200 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                        Active days · {activityStats.activeDays}
+                    </span>
                 </div>
             </div>
 
@@ -178,77 +249,83 @@ export function GitHubActivity() {
                         </p>
                     </div>
                     <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
-                        Live GraphQL Data
+                        @{username} · updated hourly
                     </p>
                 </div>
 
-                <div className="overflow-x-auto p-4">
-                    {isLoading ? (
-                        <ContributionSkeleton />
-                    ) : activity?.configured === false ? (
-                        <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
-                            Add `GITHUB_TOKEN` to `.env.local`, then restart the dev server to show your contribution graph.
-                        </div>
-                    ) : error ? (
-                        <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
-                            {error}
-                        </div>
-                    ) : (
-                        <div className="min-w-[42rem]">
-                            <div
-                                className="mb-2 ml-10 grid gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500"
-                                style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
-                            >
-                                {monthMarkers.map((month, index) => (
-                                    <span key={`${month}-${index}`} className="h-3 leading-3">
-                                        {month}
-                                    </span>
-                                ))}
+                <div className="relative overflow-hidden">
+                    <div className="overflow-x-auto p-4">
+                        {isLoading ? (
+                            <ContributionSkeleton />
+                        ) : activity?.configured === false ? (
+                            <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
+                                Add `GITHUB_TOKEN` to `.env.local`, then restart the dev server to show your contribution graph.
                             </div>
-
-                            <div className="grid grid-cols-[2rem_1fr] gap-2">
-                                <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
-                                    {weekdayLabels.map((label, index) => (
-                                        <span key={`${label}-${index}`} className="h-3 leading-3">
-                                            {label}
+                        ) : error ? (
+                            <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
+                                {error}
+                            </div>
+                        ) : (
+                            <div className="min-w-[42rem]">
+                                <div
+                                    className="mb-2 ml-10 grid gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500"
+                                    style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
+                                >
+                                    {monthMarkers.map((month, index) => (
+                                        <span key={`${month}-${index}`} className="h-3 leading-3">
+                                            {month}
                                         </span>
                                     ))}
                                 </div>
 
-                                <div
-                                    className="grid gap-1"
-                                    style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
-                                >
-                                    {activity?.weeks.map((week) => (
-                                        <div key={week.firstDay} className="grid grid-rows-7 gap-1">
-                                            {Array.from({ length: 7 }, (_, weekday) => {
-                                                const day = week.contributionDays.find(
-                                                    (contributionDay) => contributionDay.weekday === weekday
-                                                );
+                                <div className="grid grid-cols-[2rem_1fr] gap-2">
+                                    <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                                        {weekdayLabels.map((label, index) => (
+                                            <span key={`${label}-${index}`} className="h-3 leading-3">
+                                                {label}
+                                            </span>
+                                        ))}
+                                    </div>
 
-                                                return (
-                                                    <span
-                                                        key={`${week.firstDay}-${weekday}`}
-                                                        className={`h-3 w-3 border ${getContributionClass(day)}`}
-                                                        title={
-                                                            day
-                                                                ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
-                                                                : "No contribution data"
-                                                        }
-                                                        aria-label={
-                                                            day
-                                                                ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
-                                                                : "No contribution data"
-                                                        }
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    ))}
+                                    <div
+                                        className="grid gap-1"
+                                        style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
+                                    >
+                                        {activity?.weeks.map((week) => (
+                                            <div key={week.firstDay} className="grid grid-rows-7 gap-1">
+                                                {Array.from({ length: 7 }, (_, weekday) => {
+                                                    const day = week.contributionDays.find(
+                                                        (contributionDay) => contributionDay.weekday === weekday
+                                                    );
+
+                                                    return (
+                                                        <span
+                                                            key={`${week.firstDay}-${weekday}`}
+                                                            className={`h-3 w-3 border ${getContributionClass(day)}`}
+                                                            title={
+                                                                day
+                                                                    ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
+                                                                    : "No contribution data"
+                                                            }
+                                                            aria-label={
+                                                                day
+                                                                    ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
+                                                                    : "No contribution data"
+                                                            }
+                                                        />
+                                                    );
+                                                })}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
+                    <div
+                        className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white to-transparent md:hidden"
+                        aria-hidden="true"
+                    />
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 px-4 py-3">

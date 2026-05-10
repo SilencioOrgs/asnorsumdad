@@ -170,7 +170,7 @@ export const projects: Project[] = [
         tags: ["Flutter", "Mobile App", "Firebase", "Private"],
         url: "",
         group: "capstone",
-        status: "Private",
+        status: "Private · NDA",
     },
     {
         title: "ChadGPT - Tone Profiler",
