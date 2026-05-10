@@ -2,35 +2,41 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { User } from "lucide-react";
+import { PixelScatter } from "@/components/sections/pixel-scatter";
 import { aboutContent } from "@/lib/data";
 import { fadeInUp } from "@/lib/utils";
 
 export function About() {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const isActive = useInView(ref, { once: false, margin: "-50px" });
 
     return (
-        <motion.div
+        <motion.section
+            id="about"
             ref={ref}
             variants={fadeInUp}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="relative isolate min-w-0 scroll-mt-28"
+            aria-labelledby="about-heading"
         >
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
-                <User size={18} className="text-neutral-500" />
-                About
-            </h2>
-            <div className="space-y-3">
-                {aboutContent.split("\n\n").map((paragraph, index) => (
-                    <p
-                        key={index}
-                        className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed"
-                    >
-                        {paragraph}
-                    </p>
+            <PixelScatter active={isActive} />
+
+            <div className="mb-8">
+                <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                    About
+                </p>
+                <h2 id="about-heading" className="font-display text-4xl font-semibold text-black sm:text-5xl">
+                    Practical systems, clean interfaces.
+                </h2>
+            </div>
+
+            <div className="space-y-5 text-base leading-8 text-neutral-700 sm:text-lg">
+                {aboutContent.split("\n\n").map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
                 ))}
             </div>
-        </motion.div>
+        </motion.section>
     );
 }

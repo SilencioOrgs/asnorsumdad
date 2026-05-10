@@ -1,0 +1,272 @@
+"use client";
+
+import { motion, useInView } from "framer-motion";
+import { Github } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { PixelScatter } from "@/components/sections/pixel-scatter";
+
+interface ContributionDay {
+    date: string;
+    contributionCount: number;
+    contributionLevel: string;
+    weekday: number;
+}
+
+interface ContributionWeek {
+    firstDay: string;
+    contributionDays: ContributionDay[];
+}
+
+interface ContributionResponse {
+    configured: boolean;
+    username: string | null;
+    totalContributions: number;
+    weeks: ContributionWeek[];
+    message?: string;
+}
+
+const weekdayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
+
+function getContributionClass(day?: ContributionDay) {
+    if (!day || day.contributionCount === 0) {
+        return "border-neutral-200 bg-neutral-50";
+    }
+
+    switch (day.contributionLevel) {
+        case "FIRST_QUARTILE":
+            return "border-neutral-300 bg-neutral-300";
+        case "SECOND_QUARTILE":
+            return "border-neutral-500 bg-neutral-500";
+        case "THIRD_QUARTILE":
+            return "border-neutral-700 bg-neutral-700";
+        case "FOURTH_QUARTILE":
+            return "border-black bg-black";
+        default:
+            return "border-neutral-400 bg-neutral-400";
+    }
+}
+
+function formatDateLabel(date: string) {
+    return new Intl.DateTimeFormat("en", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    }).format(new Date(date));
+}
+
+function getMonthMarkers(weeks: ContributionWeek[]) {
+    return weeks.map((week, index) => {
+        const currentMonth = new Date(week.firstDay).getMonth();
+        const previousMonth = index > 0 ? new Date(weeks[index - 1].firstDay).getMonth() : -1;
+
+        if (index === 0 || currentMonth !== previousMonth) {
+            return new Intl.DateTimeFormat("en", { month: "short" }).format(new Date(week.firstDay));
+        }
+
+        return "";
+    });
+}
+
+function ContributionSkeleton() {
+    return (
+        <div className="min-w-[42rem]">
+            <div className="mb-2 ml-10 grid grid-cols-[repeat(53,0.75rem)] gap-1">
+                {Array.from({ length: 53 }, (_, index) => (
+                    <span key={index} className="h-3 bg-neutral-100" />
+                ))}
+            </div>
+            <div className="grid grid-cols-[2rem_1fr] gap-2">
+                <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                    {weekdayLabels.map((label, index) => (
+                        <span key={`${label}-${index}`} className="h-3 leading-3">
+                            {label}
+                        </span>
+                    ))}
+                </div>
+                <div className="grid grid-cols-[repeat(53,0.75rem)] gap-1">
+                    {Array.from({ length: 53 }, (_, week) => (
+                        <div key={week} className="grid grid-rows-7 gap-1">
+                            {Array.from({ length: 7 }, (_, day) => (
+                                <span key={`${week}-${day}`} className="h-3 w-3 border border-neutral-200 bg-neutral-50" />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function GitHubActivity() {
+    const ref = useRef(null);
+    const isActive = useInView(ref, { once: false, margin: "-50px" });
+    const [activity, setActivity] = useState<ContributionResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        async function loadActivity() {
+            try {
+                const response = await fetch("/api/github-contributions");
+                const payload = (await response.json()) as ContributionResponse;
+
+                if (!isMounted) return;
+
+                setActivity(payload);
+                setError(response.ok ? null : payload.message ?? "Unable to load GitHub activity.");
+            } catch {
+                if (isMounted) {
+                    setError("Unable to load GitHub activity.");
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        loadActivity();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    const monthMarkers = useMemo(() => getMonthMarkers(activity?.weeks ?? []), [activity?.weeks]);
+
+    return (
+        <motion.section
+            id="github-activity"
+            ref={ref}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="relative isolate scroll-mt-28 border-t border-black py-16 md:py-24"
+            aria-labelledby="github-activity-heading"
+        >
+            <PixelScatter active={isActive} />
+
+            <div className="mb-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+                <div>
+                    <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                        GitHub Activity
+                    </p>
+                    <h2 id="github-activity-heading" className="font-display text-4xl font-semibold text-black sm:text-5xl">
+                        Contribution index.
+                    </h2>
+                </div>
+
+                <div className="grid gap-3 lg:justify-self-end lg:text-right">
+                    <p className="font-display text-4xl font-semibold leading-none text-black">
+                        {isLoading ? "--" : activity?.totalContributions ?? 0}
+                    </p>
+                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
+                        Contributions in the last year
+                    </p>
+                </div>
+            </div>
+
+            <div className="overflow-hidden border border-black bg-white">
+                <div className="flex items-center justify-between gap-4 border-b border-black px-4 py-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                        <Github size={17} />
+                        <p className="truncate font-mono text-xs uppercase tracking-[0.16em] text-black">
+                            {activity?.username ?? "GitHub"}
+                        </p>
+                    </div>
+                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
+                        Live GraphQL Data
+                    </p>
+                </div>
+
+                <div className="overflow-x-auto p-4">
+                    {isLoading ? (
+                        <ContributionSkeleton />
+                    ) : activity?.configured === false ? (
+                        <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
+                            Add `GITHUB_TOKEN` to `.env.local`, then restart the dev server to show your contribution graph.
+                        </div>
+                    ) : error ? (
+                        <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
+                            {error}
+                        </div>
+                    ) : (
+                        <div className="min-w-[42rem]">
+                            <div
+                                className="mb-2 ml-10 grid gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500"
+                                style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
+                            >
+                                {monthMarkers.map((month, index) => (
+                                    <span key={`${month}-${index}`} className="h-3 leading-3">
+                                        {month}
+                                    </span>
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-[2rem_1fr] gap-2">
+                                <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                                    {weekdayLabels.map((label, index) => (
+                                        <span key={`${label}-${index}`} className="h-3 leading-3">
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <div
+                                    className="grid gap-1"
+                                    style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
+                                >
+                                    {activity?.weeks.map((week) => (
+                                        <div key={week.firstDay} className="grid grid-rows-7 gap-1">
+                                            {Array.from({ length: 7 }, (_, weekday) => {
+                                                const day = week.contributionDays.find(
+                                                    (contributionDay) => contributionDay.weekday === weekday
+                                                );
+
+                                                return (
+                                                    <span
+                                                        key={`${week.firstDay}-${weekday}`}
+                                                        className={`h-3 w-3 border ${getContributionClass(day)}`}
+                                                        title={
+                                                            day
+                                                                ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
+                                                                : "No contribution data"
+                                                        }
+                                                        aria-label={
+                                                            day
+                                                                ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
+                                                                : "No contribution data"
+                                                        }
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 px-4 py-3">
+                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
+                        Less
+                    </p>
+                    <div className="flex items-center gap-1">
+                        {["bg-neutral-50", "bg-neutral-300", "bg-neutral-500", "bg-neutral-700", "bg-black"].map(
+                            (tone) => (
+                                <span key={tone} className={`h-3 w-3 border border-neutral-200 ${tone}`} />
+                            )
+                        )}
+                    </div>
+                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
+                        More
+                    </p>
+                </div>
+            </div>
+        </motion.section>
+    );
+}

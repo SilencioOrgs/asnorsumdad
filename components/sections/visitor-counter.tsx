@@ -67,7 +67,7 @@ export function VisitorCounter() {
     }, []);
 
     return (
-        <div className="mb-2 flex items-center justify-center gap-1.5 text-sm text-neutral-500 dark:text-neutral-400">
+        <div className="mb-2 flex items-center justify-center gap-1.5 text-sm text-current">
             <Users size={14} />
             {hasError ? (
                 <span>Visitors unavailable</span>
@@ -77,4 +77,3 @@ export function VisitorCounter() {
         </div>
     );
 }
-

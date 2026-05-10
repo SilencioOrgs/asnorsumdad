@@ -1,19 +1,30 @@
-import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import type { Metadata, Viewport } from "next";
+import { Geist_Mono, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-poppins",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://asnorsumdad.vercel.app"),
   title: "Asnor Sumdad | Full-Stack & Mobile Developer",
   description:
-    "Full-stack and mobile developer specializing in modern web platforms, mobile apps, and AI-powered systems. Building production-ready solutions with Next.js, Flutter, FastAPI, and more.",
+    "Full-stack and mobile developer in Laguna, Philippines building clean web, mobile, AI, and IoT systems for real-world problems.",
   keywords: [
     "Full-Stack Developer",
     "Mobile Developer",
@@ -33,11 +44,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://your-portfolio.vercel.app",
+    url: "https://asnorsumdad.vercel.app",
     siteName: "Asnor Sumdad Portfolio",
     title: "Asnor Sumdad | Full-Stack & Mobile Developer",
     description:
-      "Full-stack and mobile developer specializing in modern web platforms, mobile apps, and AI-powered systems.",
+      "A monochrome developer portfolio for selected web, mobile, AI, and IoT work.",
     images: [
       {
         url: "/og-image.png",
@@ -51,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Asnor Sumdad | Full-Stack & Mobile Developer",
     description:
-      "Full-stack and mobile developer specializing in modern web platforms, mobile apps, and AI-powered systems.",
+      "Selected web, mobile, AI, and IoT systems by Asnor Sumdad.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -60,23 +71,22 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={poppins.variable}>
-      <body className="antialiased font-sans" style={{ fontFamily: "var(--font-poppins), system-ui, sans-serif" }}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
-      </body>
+    <html
+      lang="en"
+      className={`${inter.variable} ${spaceGrotesk.variable} ${geistMono.variable}`}
+    >
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }

@@ -1,34 +1,54 @@
-// Personal Info
 export const personalInfo = {
     name: "Asnor Sumdad",
-    role: "Full-Stack Developer",
-    tagline: "Building modern web, mobile, and AI-powered systems",
+    role: "Full-Stack & Mobile Developer",
+    label: "Full-Stack & Mobile Developer",
+    tagline:
+        "I build clean websites and mobile apps for real-world problems.",
     location: "Laguna, Philippines",
+    availability:
+        "Available for freelance projects, capstone systems, and web/mobile development.",
     email: "asnor023@gmail.com",
     github: "https://github.com/SilencioOrgs",
     linkedin: "https://www.linkedin.com/in/sumdad-asnor-a-924566327",
     instagram: "https://www.instagram.com/asnor_sumdad",
     portfolio: "https://asnorsumdad.vercel.app",
+    resume: "/cv.pdf",
 };
 
-// About Section
-export const aboutContent = `I'm a full-stack developer with a strong background in software engineering, IoT, and AI-powered applications. I specialize in building modern web platforms, mobile apps, and hardware-integrated systems that solve real-world problems.
+export const aboutContent = `I'm a full-stack developer with experience in software engineering, IoT, and AI-powered applications.
 
-I have worked as the primary developer for multiple client projects, capstone systems, and thesis-level applications, delivering production-ready solutions using technologies like Next.js, Flutter, FastAPI, Firebase, Supabase, and ESP32-based hardware.
+I build modern web platforms, mobile apps, and hardware-integrated systems using tools like Next.js, Flutter, FastAPI, Firebase, Supabase, and ESP32.
 
-My focus is on creating clean, scalable, and reliable systems — whether it's an AI-driven web app, a real-time tracking platform, or a smart embedded device. I enjoy turning complex ideas into usable, high-impact digital products.`;
+My focus is simple: clean interfaces, reliable systems, and practical products that solve real problems.`;
 
-// Tech Stack
 export const techStack = {
-    frontend: ["JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS", "Flutter"],
+    frontend: ["React", "Next.js", "Tailwind CSS", "Flutter", "JavaScript", "TypeScript"],
     backend: ["Node.js", "Python", "FastAPI", "PHP", "REST APIs"],
-    database: ["Firebase", "Supabase", "MySQL", "SQLite", "PostgreSQL"],
+    database: ["Firebase", "Supabase", "MySQL", "PostgreSQL", "SQLite"],
     ai: ["OpenAI API", "LLaMA", "Flan-T5", "NLP", "Text Processing"],
-    iot: ["ESP32", "Arduino", "Raspberry Pi", "GPS Modules", "Sensors & Actuators"],
-    other: ["Git / GitHub", "Trello"],
+    hardware: ["ESP32", "Arduino", "Raspberry Pi", "GPS Modules", "Sensors"],
+    tools: ["Git", "GitHub", "Trello"],
 };
 
-// Experience
+interface ProfileStat {
+    value: string;
+    label: string;
+    detail: string;
+}
+
+export const profileStats: ProfileStat[] = [
+    {
+        value: "3 yrs",
+        label: "Dev exp.",
+        detail: "Hands-on work with web apps, client pages, and full-stack systems.",
+    },
+    {
+        value: "20+",
+        label: "Projects",
+        detail: "Freelance, capstone, event, productivity, AI, and IoT builds.",
+    },
+];
+
 interface Experience {
     period: string;
     summary: string;
@@ -37,126 +57,199 @@ interface Experience {
 export const experiences: Experience[] = [
     {
         period: "2019",
-        summary:
-            'Began my journey in programming by creating my first "Hello, World!" program and learning the foundations of coding.',
+        summary: 'Started programming with my first "Hello, World" program.',
     },
     {
         period: "2020",
-        summary:
-            "Started building simple games with Scratch and later explored VB.NET, where I developed a basic ordering system and gained early hands-on experience in software development.",
+        summary: "Built simple games and early VB.NET systems.",
     },
     {
-        period: "2022 - Present",
+        period: "2022",
         summary:
-            "Began my Computer Engineering journey and actively participated in programming events, regional competitions, and hackathons, which helped shape my technical growth and collaborative skills.",
+            "Started Computer Engineering and joined hackathons, programming events, and technical communities.",
     },
     {
-        period: "2025 - Present",
+        period: "2025",
         summary:
-            "Expanded into professional work as a Video Editor and Full-Stack Developer, while also managing small freelance projects such as wedding websites and capstone/thesis web systems for students.",
+            "Expanded into freelance development, video editing, and client projects.",
     },
 ];
 
-// Achievements
-export const achievements = [
+interface Certificate {
+    title: string;
+    issuer: string;
+    year: string;
+    file: string;
+    image: string;
+}
+
+export const certificates: Certificate[] = [
     {
-        title: "Campus Event - CpE Days 2026",
-        detail: "Programming Champion Team (Python)",
+        title: "Innovation Lab Hackathon",
+        issuer: "The Innovation Lab 2026",
+        year: "2026",
+        file: "SUMDAD, ASNOR A. Certificate of Attendance.pdf",
+        image: "innovation-lab-2026-certificate.png",
     },
     {
-        title: "Regional Programming Competition (ICpEP) 2024",
-        detail: "Java Participant",
+        title: "Cybersecurity Plan Orientation",
+        issuer: "DICT Region IV-A Cybersecurity",
+        year: "2025",
+        file: "cert_Asnor A. Sumdad.pdf",
+        image: "dict-cybersecurity-orientation-2025-certificate.png",
     },
     {
-        title: "Campus Event - CpE Days 2022",
-        detail: "Programming Champion Team (C++)",
+        title: "Regional Convention, GA, CpE Challenge",
+        issuer: "ICpEP.se",
+        year: "2022",
+        file: "ICpEP.se Regional Convention, GA, CpE Challenge_SUMDAD, ASNOR.pdf",
+        image: "icpep-cpe-challenge-2022-certificate.png",
     },
     {
-        title: "Reply Code Challenge Team 2022",
-        detail: "International Participant",
+        title: "Reply Code Challenge Teen",
+        issuer: "Reply Code Challenge",
+        year: "2023",
+        file: "ReplyCodeChallengeTeen2023_Certificate.pdf",
+        image: "reply-code-challenge-teen-2023-certificate.png",
     },
 ];
 
-// Projects
+export const projectGroups = [
+    {
+        id: "capstone",
+        label: "Capstone / Thesis / Client Projects",
+        description: "Systems built for practical workflows, client needs, and product validation.",
+    },
+    {
+        id: "wedding",
+        label: "Wedding Website Projects",
+        description: "Event websites focused on invitations, guest information, and celebration details.",
+    },
+    {
+        id: "personal",
+        label: "Personal Projects",
+        description: "Experiments, productivity tools, and independent builds.",
+    },
+] as const;
+
+type ProjectGroupId = (typeof projectGroups)[number]["id"];
+
 interface Project {
     title: string;
     description: string;
     tags: string[];
     url: string;
-    image: string;
+    group: ProjectGroupId;
+    image?: string;
+    status?: string;
 }
 
 export const projects: Project[] = [
     {
+        title: "Ate Ai's Kitchen Ordering System",
+        description:
+            "Food ordering platform for managing orders, notifications, and delivery locations.",
+        tags: ["Next.js", "Supabase", "Firebase", "Nodemailer", "Mapbox"],
+        url: "https://ateaikitchen.vercel.app",
+        group: "capstone",
+        image: "/photos/orderingsystem.png",
+    },
+    {
+        title: "HereafterPal",
+        description:
+            "Digital memorial platform for preserving stories, photos, tributes, and legacy archives.",
+        tags: ["React", "Vercel", "Responsive UI", "Product Design"],
+        url: "https://hereafterpal.vercel.app",
+        group: "capstone",
+        status: "Live",
+    },
+    {
+        title: "PillPal",
+        description:
+            "Private mobile app for medication reminders, schedules, and health routine tracking.",
+        tags: ["Flutter", "Mobile App", "Firebase", "Private"],
+        url: "",
+        group: "capstone",
+        status: "Private",
+    },
+    {
         title: "ChadGPT - Tone Profiler",
-        description: "Sentiment & tone profiler using FLAN-T5 and Llama 3.2",
-        tags: ["Next.js", "FastAPI", "Ollama"],
+        description:
+            "AI-powered writing tone analysis platform using sentiment and tone profiling.",
+        tags: ["Next.js", "FastAPI", "NLP", "Ollama"],
         url: "https://tone-profiler.vercel.app",
+        group: "personal",
         image: "/photos/tone-profiler.vercel.app_.png",
     },
     {
         title: "Wedding Landing Page",
-        description: "Elegant wedding invitation landing page",
+        description:
+            "Elegant wedding website with RSVP-focused presentation and animated sections.",
         tags: ["Next.js", "Framer Motion"],
         url: "https://wedding-landingpage.vercel.app",
+        group: "wedding",
         image: "/photos/wedding-landingpage.vercel.app_.png",
     },
     {
         title: "Daniel & Giada Wedding Website",
-        description: "Custom wedding website with event details, story sections, and a polished romantic presentation.",
+        description:
+            "Custom event website for guest information, storytelling, and event experience.",
         tags: ["Next.js", "Framer Motion"],
         url: "https://daniel-giada-wedding.vercel.app",
+        group: "wedding",
         image: "/photos/wedding-landingpage.vercel.app_.png",
     },
     {
         title: "Carl Joseph & Shania Mae Wedding Website",
-        description: "Responsive wedding landing page built to showcase the couple, ceremony details, and celebration timeline.",
+        description:
+            "Responsive wedding landing page for ceremony details, couple story, and celebration timeline.",
         tags: ["Next.js", "Framer Motion"],
         url: "https://carl-joseph-and-shania-mae.vercel.app",
+        group: "wedding",
         image: "/photos/wedding-landingpage.vercel.app_.png",
     },
     {
         title: "Rameez & Kris Wedding Website",
-        description: "Elegant wedding invitation website designed for sharing event information in a warm, modern layout.",
+        description:
+            "Invitation website for sharing event information in a warm, modern layout.",
         tags: ["Next.js", "Framer Motion"],
         url: "https://rameez-kris-i13a.vercel.app",
+        group: "wedding",
         image: "/photos/wedding-landingpage.vercel.app_.png",
     },
     {
         title: "Godfrey & Vanessa Wedding Website",
-        description: "Wedding website featuring invitation content, key event details, and a smooth mobile-friendly experience.",
+        description:
+            "Wedding website featuring invitation content, key event details, and a mobile-friendly experience.",
         tags: ["Next.js", "Framer Motion"],
         url: "https://godfreyvanessa.vercel.app",
+        group: "wedding",
         image: "/photos/wedding-landingpage.vercel.app_.png",
     },
     {
         title: "LSPU Student Registration",
-        description: "Student registration system for LSPU",
+        description:
+            "Student registration system built for clearer data entry and enrollment workflows.",
         tags: ["React", "Vite"],
         url: "",
+        group: "personal",
         image: "/photos/lspu-student-reg.vercel.app_.png",
     },
     {
         title: "Focus Flow",
-        description: "Productivity and focus management app",
+        description:
+            "Productivity and focus management app for structuring work sessions.",
         tags: ["Next.js", "Productivity"],
         url: "https://focus-flow-vert.vercel.app",
+        group: "personal",
         image: "/photos/focus-flow-vert.vercel.app_.png",
-    },
-    {
-        title: "Ate Ai's Kitchen",
-        description: "Food ordering platform for managing orders, notifications, and delivery locations.",
-        tags: ["Next.js", "Supabase", "Firebase", "Nodemailer", "Mapbox"],
-        url: "https://ateaikitchen.vercel.app",
-        image: "/photos/orderingsystem.png",
     },
 ];
 
-// Navigation Links
 export const navLinks = [
+    { name: "Profile", href: "#profile" },
+    { name: "Work", href: "#work" },
+    { name: "Stack", href: "#stack" },
     { name: "About", href: "#about" },
-    { name: "Tech", href: "#tech" },
-    { name: "Experience", href: "#experience" },
-    { name: "Projects", href: "#projects" },
     { name: "Contact", href: "#contact" },
 ];

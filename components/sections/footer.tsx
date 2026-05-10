@@ -3,14 +3,49 @@
 import { VisitorCounter } from "@/components/sections/visitor-counter";
 import { personalInfo } from "@/lib/data";
 
+const footerLinks = [
+    { name: "Email", href: `mailto:${personalInfo.email}` },
+    { name: "GitHub", href: personalInfo.github },
+    { name: "LinkedIn", href: personalInfo.linkedin },
+    { name: "Instagram", href: personalInfo.instagram },
+];
+
 export function Footer() {
     return (
-        <footer className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-800 text-center">
-            <VisitorCounter />
-            <p className="text-sm text-neutral-500 dark:text-neutral-500">
-                © {new Date().getFullYear()} {personalInfo.name}. All rights reserved.
-            </p>
+        <footer className="bg-black px-5 py-10 text-white sm:px-8">
+            <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[1fr_auto] md:items-end">
+                <div>
+                    <p className="font-display text-3xl font-semibold sm:text-4xl">
+                        Let&apos;s build something useful.
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3">
+                        {footerLinks.map((link) => {
+                            const isExternal = !link.href.startsWith("mailto:");
+
+                            return (
+                                <a
+                                    key={link.name}
+                                    href={link.href}
+                                    target={isExternal ? "_blank" : undefined}
+                                    rel={isExternal ? "noopener noreferrer" : undefined}
+                                    className="font-mono text-xs uppercase tracking-[0.16em] text-white/70 transition-colors duration-200 hover:text-white"
+                                >
+                                    {link.name}
+                                </a>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div className="text-left md:text-right">
+                    <div className="mb-3 text-white/70">
+                        <VisitorCounter />
+                    </div>
+                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/60">
+                        &copy; {new Date().getFullYear()} {personalInfo.name}
+                    </p>
+                </div>
+            </div>
         </footer>
     );
 }
-
