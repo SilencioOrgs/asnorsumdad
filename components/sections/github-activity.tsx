@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { Github } from "lucide-react";
+import { Github, Flame, Calendar, Trophy } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PixelScatter } from "@/components/sections/pixel-scatter";
+import { fadeInUp } from "@/lib/utils";
 
 interface ContributionDay {
     date: string;
@@ -35,20 +35,20 @@ const weekdayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
 
 function getContributionClass(day?: ContributionDay) {
     if (!day || day.contributionCount === 0) {
-        return "border-neutral-200 bg-neutral-50";
+        return "bg-neutral-200/60 dark:bg-white/[0.05] border-black/5 dark:border-white/5";
     }
 
     switch (day.contributionLevel) {
         case "FIRST_QUARTILE":
-            return "border-neutral-300 bg-neutral-300";
+            return "bg-neutral-400/80 dark:bg-neutral-700 border-neutral-400/40 dark:border-neutral-600";
         case "SECOND_QUARTILE":
-            return "border-neutral-500 bg-neutral-500";
+            return "bg-neutral-600 dark:bg-neutral-500 border-neutral-600/40 dark:border-neutral-400";
         case "THIRD_QUARTILE":
-            return "border-neutral-700 bg-neutral-700";
+            return "bg-neutral-800 dark:bg-neutral-300 border-neutral-800/40 dark:border-neutral-200";
         case "FOURTH_QUARTILE":
-            return "border-black bg-black";
+            return "bg-black dark:bg-white border-black dark:border-white shadow-sm";
         default:
-            return "border-neutral-400 bg-neutral-400";
+            return "bg-neutral-500 dark:bg-neutral-400 border-neutral-500/40";
     }
 }
 
@@ -123,14 +123,14 @@ function getActivityStats(weeks: ContributionWeek[]): ActivityStats {
 
 function ContributionSkeleton() {
     return (
-        <div className="min-w-[42rem]">
+        <div className="min-w-[42rem] animate-pulse">
             <div className="mb-2 ml-10 grid grid-cols-[repeat(53,0.75rem)] gap-1">
                 {Array.from({ length: 53 }, (_, index) => (
-                    <span key={index} className="h-3 bg-neutral-100" />
+                    <span key={index} className="h-3 rounded-[2px] bg-neutral-200 dark:bg-white/[0.04]" />
                 ))}
             </div>
             <div className="grid grid-cols-[2rem_1fr] gap-2">
-                <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400">
                     {weekdayLabels.map((label, index) => (
                         <span key={`${label}-${index}`} className="h-3 leading-3">
                             {label}
@@ -141,7 +141,10 @@ function ContributionSkeleton() {
                     {Array.from({ length: 53 }, (_, week) => (
                         <div key={week} className="grid grid-rows-7 gap-1">
                             {Array.from({ length: 7 }, (_, day) => (
-                                <span key={`${week}-${day}`} className="h-3 w-3 border border-neutral-200 bg-neutral-50" />
+                                <span
+                                    key={`${week}-${day}`}
+                                    className="h-3 w-3 rounded-[2px] bg-neutral-200 dark:bg-white/[0.04]"
+                                />
                             ))}
                         </div>
                     ))}
@@ -153,7 +156,7 @@ function ContributionSkeleton() {
 
 export function GitHubActivity() {
     const ref = useRef(null);
-    const isActive = useInView(ref, { once: false, margin: "-50px" });
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
     const [activity, setActivity] = useState<ContributionResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -190,85 +193,136 @@ export function GitHubActivity() {
 
     const monthMarkers = useMemo(() => getMonthMarkers(activity?.weeks ?? []), [activity?.weeks]);
     const activityStats = useMemo(() => getActivityStats(activity?.weeks ?? []), [activity?.weeks]);
-    const username = activity?.username ?? "GitHub";
+    const username = activity?.username ?? "SilencioOrgs";
 
     return (
         <motion.section
-            id="github-activity"
+            id="activity"
             ref={ref}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="relative isolate scroll-mt-28 border-t border-black py-12 md:py-16"
+            variants={fadeInUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="scroll-mt-28"
             aria-labelledby="github-activity-heading"
         >
-            <PixelScatter active={isActive} />
-
-            <div className="mb-6 grid gap-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                        GitHub Activity
-                    </p>
-                    <span className="inline-flex border border-neutral-200 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-neutral-600">
-                        @{username}
-                    </span>
-                </div>
-
-                <div className="grid gap-2">
-                    <h2
-                        id="github-activity-heading"
-                        className="font-display text-4xl font-semibold leading-none text-black sm:text-5xl"
-                    >
-                        {isLoading ? "--" : activity?.totalContributions ?? 0}
-                    </h2>
-                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
-                        Contributions in the last year
-                    </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                    <span className="inline-flex border border-neutral-200 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-neutral-600">
-                        Longest streak · {activityStats.longestStreak} days
-                    </span>
-                    <span className="inline-flex border border-neutral-200 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-neutral-600">
-                        Best month · {activityStats.bestMonth}
-                    </span>
-                    <span className="inline-flex border border-neutral-200 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-neutral-600">
-                        Active days · {activityStats.activeDays}
-                    </span>
-                </div>
-            </div>
-
-            <div className="overflow-hidden border border-black bg-white">
-                <div className="flex items-center justify-between gap-4 border-b border-black px-4 py-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                        <Github size={17} />
-                        <p className="truncate font-mono text-xs uppercase tracking-[0.16em] text-black">
-                            {activity?.username ?? "GitHub"}
+            <div className="glass-panel overflow-hidden rounded-2xl p-6 md:p-8">
+                {/* Section Header */}
+                <div className="mb-6 flex flex-col justify-between gap-4 border-b border-[#e2ded2] dark:border-[#282a2b] pb-6 sm:flex-row sm:items-center">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <Github size={18} className="text-black dark:text-white" />
+                            <h2
+                                id="github-activity-heading"
+                                className="font-display text-xl font-bold tracking-tight text-neutral-900 dark:text-white"
+                            >
+                                Open Source &amp; Engineering Activity
+                            </h2>
+                        </div>
+                        <p className="mt-1 text-sm text-neutral-600 dark:text-[#b4b5b5]">
+                            Public commits, repositories, and continuous shipping across projects.
                         </p>
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
-                        @{username} · updated hourly
-                    </p>
+
+                    <a
+                        href={`https://github.com/${username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 self-start rounded-full border border-black/10 bg-black/[0.02] px-3.5 py-1.5 font-mono text-xs font-medium text-neutral-800 transition-colors hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:text-neutral-200 dark:hover:bg-white/[0.08] sm:self-auto"
+                    >
+                        <Github size={14} />
+                        <span>@{username}</span>
+                    </a>
                 </div>
 
-                <div className="relative overflow-hidden">
-                    <div className="overflow-x-auto p-4">
+                {/* Metrics Highlights Bento Cards */}
+                <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="rounded-xl border border-black/5 bg-black/[0.02] p-4 dark:border-white/5 dark:bg-white/[0.02]">
+                        <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">Total Year</p>
+                        <p className="mt-1 font-display text-2xl font-bold text-neutral-900 dark:text-white sm:text-3xl">
+                            {isLoading ? "--" : activity?.configured ? (activity?.totalContributions?.toLocaleString() ?? 0) : "20+"}
+                        </p>
+                        <p className="font-mono text-[10px] text-neutral-400">
+                            {activity?.configured ? "Contributions" : "Public Repos & Builds"}
+                        </p>
+                    </div>
+
+                    <div className="rounded-xl border border-black/5 bg-black/[0.02] p-4 dark:border-white/5 dark:bg-white/[0.02]">
+                        <div className="flex items-center gap-1">
+                            <Flame size={14} className="text-orange-500" />
+                            <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">Longest Streak</p>
+                        </div>
+                        <p className="mt-1 font-display text-2xl font-bold text-neutral-900 dark:text-white sm:text-3xl">
+                            {isLoading ? "--" : activity?.configured ? `${activityStats.longestStreak}d` : "Active"}
+                        </p>
+                        <p className="font-mono text-[10px] text-neutral-400">
+                            {activity?.configured ? "Consecutive days" : "Continuous shipping"}
+                        </p>
+                    </div>
+
+                    <div className="rounded-xl border border-black/5 bg-black/[0.02] p-4 dark:border-white/5 dark:bg-white/[0.02]">
+                        <div className="flex items-center gap-1">
+                            <Calendar size={14} className="text-emerald-500" />
+                            <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">Active Days</p>
+                        </div>
+                        <p className="mt-1 font-display text-2xl font-bold text-neutral-900 dark:text-white sm:text-3xl">
+                            {isLoading ? "--" : activity?.configured ? activityStats.activeDays : "365d"}
+                        </p>
+                        <p className="font-mono text-[10px] text-neutral-400">
+                            {activity?.configured ? "Recorded active" : "Year-round cycles"}
+                        </p>
+                    </div>
+
+                    <div className="rounded-xl border border-black/5 bg-black/[0.02] p-4 dark:border-white/5 dark:bg-white/[0.02]">
+                        <div className="flex items-center gap-1">
+                            <Trophy size={14} className="text-amber-500" />
+                            <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                                {activity?.configured ? "Peak Month" : "Platform"}
+                            </p>
+                        </div>
+                        <p className="mt-1 truncate font-display text-xl font-bold text-neutral-900 dark:text-white sm:text-2xl">
+                            {isLoading ? "--" : activity?.configured ? activityStats.bestMonth : "GitHub"}
+                        </p>
+                        <p className="font-mono text-[10px] text-neutral-400">
+                            {activity?.configured ? "Highest velocity" : "Open Source"}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Heatmap Container */}
+                <div className="relative overflow-hidden rounded-xl border border-black/5 bg-black/[0.01] p-4 dark:border-white/5 dark:bg-black/30">
+                    <div className="overflow-x-auto pb-2 pt-1">
                         {isLoading ? (
                             <ContributionSkeleton />
-                        ) : activity?.configured === false ? (
-                            <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
-                                Add `GITHUB_TOKEN` to `.env.local`, then restart the dev server to show your contribution graph.
+                        ) : !activity?.configured ? (
+                            <div className="flex flex-col items-center justify-center p-8 text-center space-y-3 rounded-xl border border-dashed border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]">
+                                <Github className="w-8 h-8 text-neutral-400 dark:text-neutral-500" />
+                                <div>
+                                    <p className="font-display font-semibold text-sm text-black dark:text-white">
+                                        Live GitHub Activity Stream
+                                    </p>
+                                    <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-md">
+                                        Make sure <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-800 dark:text-neutral-200">GITHUB_TOKEN</code> is in your <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-neutral-800 dark:text-neutral-200">.env.local</code> to stream your real-time GraphQL commit calendar.
+                                    </p>
+                                </div>
+                                <a
+                                    href={`https://github.com/${username}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black font-mono text-xs font-semibold hover:opacity-90 transition-opacity"
+                                >
+                                    <span>View @{username} on GitHub</span>
+                                    <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                                </a>
                             </div>
                         ) : error ? (
-                            <div className="border border-neutral-200 bg-neutral-50 p-5 text-sm leading-6 text-neutral-700">
+                            <div className="rounded-lg border border-dashed border-red-500/20 bg-red-500/[0.05] p-6 text-center text-sm text-red-500 font-mono">
                                 {error}
                             </div>
                         ) : (
                             <div className="min-w-[42rem]">
+                                {/* Months Header */}
                                 <div
-                                    className="mb-2 ml-10 grid gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500"
+                                    className="mb-2 ml-10 grid gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-500"
                                     style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
                                 >
                                     {monthMarkers.map((month, index) => (
@@ -279,7 +333,8 @@ export function GitHubActivity() {
                                 </div>
 
                                 <div className="grid grid-cols-[2rem_1fr] gap-2">
-                                    <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                                    {/* Weekday Labels */}
+                                    <div className="grid grid-rows-7 gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-500">
                                         {weekdayLabels.map((label, index) => (
                                             <span key={`${label}-${index}`} className="h-3 leading-3">
                                                 {label}
@@ -287,6 +342,7 @@ export function GitHubActivity() {
                                         ))}
                                     </div>
 
+                                    {/* Contribution Matrix */}
                                     <div
                                         className="grid gap-1"
                                         style={{ gridTemplateColumns: `repeat(${activity?.weeks.length ?? 0}, 0.75rem)` }}
@@ -301,7 +357,7 @@ export function GitHubActivity() {
                                                     return (
                                                         <span
                                                             key={`${week.firstDay}-${weekday}`}
-                                                            className={`h-3 w-3 border ${getContributionClass(day)}`}
+                                                            className={`h-3 w-3 rounded-[2px] border transition-transform duration-150 hover:scale-125 ${getContributionClass(day)}`}
                                                             title={
                                                                 day
                                                                     ? `${formatDateLabel(day.date)}: ${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"}`
@@ -322,26 +378,20 @@ export function GitHubActivity() {
                             </div>
                         )}
                     </div>
-                    <div
-                        className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white to-transparent md:hidden"
-                        aria-hidden="true"
-                    />
-                </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 px-4 py-3">
-                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
-                        Less
-                    </p>
-                    <div className="flex items-center gap-1">
-                        {["bg-neutral-50", "bg-neutral-300", "bg-neutral-500", "bg-neutral-700", "bg-black"].map(
-                            (tone) => (
-                                <span key={tone} className={`h-3 w-3 border border-neutral-200 ${tone}`} />
-                            )
-                        )}
+                    {/* Matrix Legend */}
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-black/5 pt-3 font-mono text-xs text-neutral-500 dark:border-white/5 dark:text-neutral-400">
+                        <span>Updated automatically via GitHub API</span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-[11px]">Less</span>
+                            <span className="h-2.5 w-2.5 rounded-[2px] border border-black/5 bg-neutral-200/60 dark:border-white/5 dark:bg-white/[0.05]" />
+                            <span className="h-2.5 w-2.5 rounded-[2px] border border-neutral-400/40 bg-neutral-400/80 dark:border-neutral-600 dark:bg-neutral-700" />
+                            <span className="h-2.5 w-2.5 rounded-[2px] border border-neutral-600/40 bg-neutral-600 dark:border-neutral-400 dark:bg-neutral-500" />
+                            <span className="h-2.5 w-2.5 rounded-[2px] border border-neutral-800/40 bg-neutral-800 dark:border-neutral-200 dark:bg-neutral-300" />
+                            <span className="h-2.5 w-2.5 rounded-[2px] border border-black bg-black dark:border-white dark:bg-white" />
+                            <span className="text-[11px]">More</span>
+                        </div>
                     </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-neutral-500">
-                        More
-                    </p>
                 </div>
             </div>
         </motion.section>

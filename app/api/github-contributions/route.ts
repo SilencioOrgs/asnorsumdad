@@ -1,4 +1,29 @@
+import fs from "fs";
+import path from "path";
 import { NextResponse } from "next/server";
+
+function getEnv(key: string): string | undefined {
+    if (process.env[key]) {
+        return process.env[key];
+    }
+    const envFiles = [".env.local", ".env", ".env.development", ".env.production"];
+    for (const file of envFiles) {
+        try {
+            const filePath = path.join(process.cwd(), file);
+            if (fs.existsSync(filePath)) {
+                const content = fs.readFileSync(filePath, "utf-8");
+                const regex = new RegExp(`^\\s*${key}\\s*=\\s*["']?([^"'\\r\\n]+)["']?`, "m");
+                const match = content.match(regex);
+                if (match?.[1]) {
+                    return match[1].trim();
+                }
+            }
+        } catch {
+            // Ignore file read errors
+        }
+    }
+    return undefined;
+}
 
 interface ContributionDay {
     date: string;
@@ -50,16 +75,19 @@ const CONTRIBUTIONS_QUERY = `
 `;
 
 export async function GET() {
-    const token = process.env.GITHUB_TOKEN;
-    const username = process.env.GITHUB_USERNAME;
+    const rawToken = getEnv("GITHUB_TOKEN");
+    const rawUsername = getEnv("GITHUB_USERNAME");
 
-    if (!token || !username) {
+    const token = rawToken?.trim()?.replace(/^["']|["']$/g, "");
+    const username = rawUsername?.trim()?.replace(/^["']|["']$/g, "") || "SilencioOrgs";
+
+    if (!token) {
         return NextResponse.json({
             configured: false,
-            username: username ?? null,
+            username: username,
             totalContributions: 0,
             weeks: [],
-            message: "GitHub contribution calendar is not configured yet.",
+            message: "Missing GITHUB_TOKEN environment variable in Vercel or .env.local",
         });
     }
 

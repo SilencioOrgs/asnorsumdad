@@ -63,14 +63,14 @@ export const experiences: Experience[] = [
         summary: "Built simple games and early VB.NET systems.",
     },
     {
-        period: "2022",
+        period: "2021 - 2022",
         summary:
-            "Started Computer Engineering and joined hackathons, programming events, and technical communities.",
+            "Started college journey pursuing BS in Computer Engineering at LSPU Main Campus, exploring hardware, IoT, and participating in hackathons.",
     },
     {
         period: "2023",
         summary:
-            "Worked as Virtual Assistant & Social Media Manager — built content automation workflows using n8n for multi-platform publishing.",
+            "Started building personal web development projects and learning HTML, CSS, JavaScript, MySQL, and PHP to develop dynamic applications, alongside n8n automations.",
     },
     {
         period: "2024 - 2025",
@@ -178,9 +178,9 @@ export const projects: Project[] = [
         description:
             "Digital memorial platform for preserving stories, photos, tributes, and legacy archives.",
         tags: ["React", "Vercel", "Responsive UI", "Product Design"],
-        url: "https://hereafterpal.vercel.app",
+        url: "",
         group: "capstone",
-        status: "Live",
+        status: "Private",
     },
     {
         title: "PillPal",
@@ -268,6 +268,7 @@ export const projects: Project[] = [
         tags: ["React", "Vite"],
         url: "",
         group: "personal",
+        status: "Private",
         image: "/images/projects/lspu-student-reg.png",
     },
     {
@@ -286,15 +287,15 @@ export const projects: Project[] = [
         tags: ["n8n", "Gemini API", "Telegram Bot API", "Facebook Graph API", "Raspberry Pi"],
         url: "",
         group: "personal",
-        status: "Personal · Self-hosted",
+        status: "Private · Self-hosted",
         image: "/images/projects/n8n-workflow.png",
     },
 ];
 
 export const navLinks = [
-    { name: "Profile", href: "#profile" },
-    { name: "Work", href: "#work" },
-    { name: "Stack", href: "#stack" },
-    { name: "About", href: "#about" },
+    { name: "Projects", href: "#projects" },
+    { name: "Tools", href: "#tools" },
+    { name: "Journey", href: "#journey" },
+    { name: "Certifications", href: "#certifications" },
     { name: "Contact", href: "#contact" },
 ];

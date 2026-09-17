@@ -51,7 +51,7 @@ export function PixelScatter({ active }: { active: boolean }) {
             {pixels.map((pixel, index) => (
                 <motion.span
                     key={`${pixel.left}-${pixel.top}-${index}`}
-                    className="absolute bg-black"
+                    className="absolute bg-neutral-900/40 dark:bg-white/30 rounded-[1px]"
                     style={{
                         left: `${pixel.left}%`,
                         top: `${pixel.top}%`,

@@ -1,49 +1,55 @@
 "use client";
 
-import { VisitorCounter } from "@/components/sections/visitor-counter";
 import { personalInfo } from "@/lib/data";
-
-const footerLinks = [
-    { name: "Email", href: `mailto:${personalInfo.email}` },
-    { name: "GitHub", href: personalInfo.github },
-    { name: "LinkedIn", href: personalInfo.linkedin },
-    { name: "Instagram", href: personalInfo.instagram },
-];
 
 export function Footer() {
     return (
-        <footer className="bg-black px-5 py-8 text-white sm:px-8">
-            <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-[1fr_auto] md:items-end">
-                <div>
-                    <p className="font-display text-2xl font-semibold sm:text-3xl">
-                        Let&apos;s build something useful.
-                    </p>
-                    <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3">
-                        {footerLinks.map((link) => {
-                            const isExternal = !link.href.startsWith("mailto:");
-
-                            return (
-                                <a
-                                    key={link.name}
-                                    href={link.href}
-                                    target={isExternal ? "_blank" : undefined}
-                                    rel={isExternal ? "noopener noreferrer" : undefined}
-                                    className="font-mono text-xs uppercase tracking-[0.16em] text-white/70 transition-colors duration-200 hover:text-white"
-                                >
-                                    {link.name}
-                                </a>
-                            );
-                        })}
-                    </div>
+        <footer className="bg-white dark:bg-black border-t border-[#e2ded2] dark:border-[#282a2b] relative z-20 transition-colors duration-300">
+            <div className="flex flex-col md:flex-row justify-between items-center w-full max-w-[1240px] mx-auto px-4 md:px-12 py-8 gap-4">
+                {/* Brand & Copyright */}
+                <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+                    <span className="font-display font-semibold text-base text-black dark:text-white flex items-center gap-2">
+                        {personalInfo.name}
+                        <span className="w-1.5 h-1.5 rounded-full glow-dot-blue inline-block" />
+                    </span>
+                    <span className="hidden sm:inline text-neutral-400">•</span>
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        &copy; {new Date().getFullYear()} {personalInfo.name}. Engineered with precision.
+                    </span>
                 </div>
 
-                <div className="text-left md:text-right">
-                    <div className="mb-3 text-white/70">
-                        <VisitorCounter />
-                    </div>
-                    <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/60">
-                        &copy; {new Date().getFullYear()} {personalInfo.name}
-                    </p>
+                {/* Links */}
+                <div className="flex items-center gap-6">
+                    <a
+                        className="text-neutral-600 dark:text-[#b4b5b5] hover:text-black dark:hover:text-white transition-colors font-mono text-xs"
+                        href={personalInfo.github}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                    >
+                        GitHub
+                    </a>
+                    <a
+                        className="text-neutral-600 dark:text-[#b4b5b5] hover:text-black dark:hover:text-white transition-colors font-mono text-xs"
+                        href={personalInfo.linkedin}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                    >
+                        LinkedIn
+                    </a>
+                    <a
+                        className="text-neutral-600 dark:text-[#b4b5b5] hover:text-black dark:hover:text-white transition-colors font-mono text-xs"
+                        href="#projects"
+                    >
+                        Terminal
+                    </a>
+                    <a
+                        className="text-neutral-600 dark:text-[#b4b5b5] hover:text-black dark:hover:text-white transition-colors font-mono text-xs"
+                        href={personalInfo.github}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                    >
+                        Source Code
+                    </a>
                 </div>
             </div>
         </footer>

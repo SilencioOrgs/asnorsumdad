@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Inter, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
@@ -17,6 +18,12 @@ const spaceGrotesk = Space_Grotesk({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -92,9 +99,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${geistMono.variable}`}
+      className={`${geist.variable} ${spaceGrotesk.variable} ${geistMono.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
     >
-      <body className="font-sans antialiased">{children}</body>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-sans antialiased">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
